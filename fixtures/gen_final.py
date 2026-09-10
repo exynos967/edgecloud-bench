@@ -96,10 +96,10 @@ gen("f06_throughput_k4", 4, 1.0, 2.0, 10.0, 125000, 16,
 
 # f07/f08: 纯等待 (对应 t4)
 gen("f07_latency_k4", 4, 1.0, 2.0, 10.0, 125000, 16,
-    80.0, 15.0, 1.0, 0.01, 0.4, 0.0, 1.0,
+    1648.0, 309.0, 0.89142375, 0.251485, 0.093939853, 0.0, 1.0,
     FULL, bursty(60, (256, 1024), (30, 120), 700.0, 9107))
 gen("f08_tight_slo_k2", 2, 1.0, 2.0, 10.0, 125000, 16,
-    60.0, 12.0, 0.5, 0.01, 0.3, 0.0, 1.0,
+    114.0, 22.8, 0.51031, 0.255155, 1.533044656, 0.0, 1.0,
     FULL, poisson(40, 0.008, (128, 512), (20, 80), 9108))
 
 # f09: 大 prefill 促分片 (对应 t6)
@@ -110,7 +110,7 @@ gen("f09_bigprefill", 4, 1.0, 2.0, 10.0, 125000, 64,
 # f10: 全 L_out=1 (对应 f1)
 random.seed(9110)
 gen("f10_lout1", 4, 1.0, 2.0, 10.0, 125000, 16,
-    200.0, 20.0, 1.0, 0.1, 0.5, 0.5, 0.5,
+    2680.0, 268.0, 0.033584, 0.016792, 0.178198004, 0.5, 0.5,
     FULL, [[i * 4.0, random.randint(128, 1024), 1] for i in range(120)])
 
 # f11: K=1 退化 (对应 t5)
@@ -152,7 +152,11 @@ gen("f16_loose_slo", 4, 1.0, 2.0, 10.0, 125000, 16,
     300.0, 50.0, 0.5, 0.05, 0.5, 0.5, 0.5,
     FULL, poisson(50, 0.02, (128, 512), (30, 100), 9116))
 
-# f17/f18: 随机参数组合 (对应 rand_0..2)
+# f17/f18: 随机参数组合 (对应 rand_0/2/3); 评分参数为校准后的覆盖值 (锚定 FCFS 基线实测)
+FINAL_RAND_CALIBRATED = {
+    9217: dict(slo1=810.0, slo2=243.0, tpub=0.27346375, tpbase=0.045501, distbase=0.62124272),
+    9218: dict(slo1=39990.0, slo2=39990.0, tpub=0.12718625, tpbase=0.034834, distbase=1.827924634),
+}
 for seed, name in [(9217, "f17_rand_a"), (9218, "f18_rand_b")]:
     random.seed(seed)
     K = random.choice([1, 2, 4, 8])
@@ -177,8 +181,9 @@ for seed, name in [(9217, "f17_rand_a"), (9218, "f18_rand_b")]:
     tpbase = random.choice([0.01, 0.1])
     distbase = random.choice([0.3, 0.5, 1.0])
     wtp = random.choice([0, 0.5, 1])
-    gen(name, K, S, lat, bw, bpt, NL, slo1, slo2, tpub, tpbase, distbase, wtp, 1.0 - wtp,
-        FULL, reqs)
+    cb = FINAL_RAND_CALIBRATED[seed]
+    gen(name, K, S, lat, bw, bpt, NL, cb["slo1"], cb["slo2"], cb["tpub"], cb["tpbase"],
+        cb["distbase"], wtp, 1.0 - wtp, FULL, reqs)
 
 # f19: 大规模重吞吐 (对应 tp19 的族)
 gen("f19_big_throughput", 8, 1.0, 2.0, 10.0, 125000, 32,

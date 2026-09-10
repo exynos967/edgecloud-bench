@@ -3,11 +3,12 @@
 
 场景覆盖:
   e1_nl1 / e2_r1 / e3_k8burst / e4_sparse / e5_sparse_arrival  边缘退化场景
-  f1_lout1 / f2_burst300 / f3_bigsingle                       极端负载
+  f1_lout1 / f2_burst300                                        极端负载
   g1_loose_slo                                                SLO 宽松
   perf_max                                                    官方约束上限性能题
   final_mix                                                   综合混合负载
-  rand_0 / rand_1 / rand_2                                    随机参数组合 (rand_3/4 在 stress/)
+  rand_0 / rand_2 / rand_3                                    随机参数组合 (rand_1 已删, rand_4 在 stress/)
+  g2_midmix                                                   中等规模混合 (校准锚定)
   tp19                                                        重吞吐 (wtp=1, K=8)
 
 注意: perf_max 的原始生成脚本中 `if t > 0: t += ...` 因 t 初值 0 永不触发,
@@ -98,18 +99,13 @@ f2_reqs = [[float(i // 20), random.randint(256, 512), random.randint(10, 80)] fo
 
 # F1: 全 L_out=1 (无 TPOT gap)
 gen("f1_lout1", 4, 1.0, 2.0, 10.0, 125000, 16,
-    200.0, 20.0, 1.0, 0.1, 0.5, 0.5, 0.5,
+    2600.0, 260.0, 0.031982, 0.015991, 0.176078358, 0.5, 0.5,
     FULL, f1_reqs)
 
 # F2: 高频突发 (15 波 x 20 个)
 gen("f2_burst300", 8, 1.0, 2.0, 10.0, 125000, 16,
     300.0, 25.0, 1.5, 0.2, 0.5, 0.5, 0.5,
     FULL, f2_reqs)
-
-# F3: 单请求大 L_in, NL=64
-gen("f3_bigsingle", 2, 1.0, 2.0, 10.0, 125000, 64,
-    500.0, 20.0, 0.5, 0.05, 0.5, 0.5, 0.5,
-    FULL, [[0.0, 4096, 100]])
 
 # G1: SLO 宽松 (验证 norm_c 可达 1)
 random.seed(5)
@@ -152,9 +148,25 @@ gen("perf_max", 8, 1.0, 2.0, 10.0, 125000, 64,
     5000.0, 5000.0, 3.0, 0.1, 1.0, 1.0, 0.0,
     tbl_perf(), reqs)
 
-# rand_0..2: 随机参数组合鲁棒性 (rand_3/4 在 stress/, 同链 seed 1000+3/4)
+def bursty(R, Lin_rng, Lout_rng, span, seed):
+    random.seed(seed)
+    reqs = []
+    t = 0.0
+    for i in range(R):
+        if i > 0 and random.random() < 0.7:
+            t += random.expovariate(1.0 / (span / max(1, R)))
+        reqs.append([round(t, 6), random.randint(*Lin_rng), random.randint(*Lout_rng)])
+    return reqs
+
+# rand_0/2/3: 随机参数组合鲁棒性 (rand_1 物理饱和已删除, rand_4 在 stress/)
 # 注意: 随机调用顺序必须与原始脚本严格一致 (dict 字面量求值顺序)
-for seed in range(3):
+# 评分参数为校准后的覆盖值 (锚定 FCFS 基线实测), 不用链上随机值
+RAND_CALIBRATED = {
+    0: dict(slo1=200.0, slo2=10.0, tpub=0.3887475, tpbase=0.047639, distbase=315.954815491),
+    2: dict(slo1=10.0, slo2=1.0, tpub=0.31372125, tpbase=0.046333, distbase=978.388186737),
+    3: dict(slo1=1200.0, slo2=18.0, tpub=3.30742, tpbase=0.314763, distbase=1.432775111),
+}
+for seed in [0, 2, 3]:
     random.seed(1000 + seed)
     K = random.choice([1, 2, 4, 8])
     NL = random.choice([1, 4, 16, 64])
@@ -179,20 +191,16 @@ for seed in range(3):
     distbase = random.choice([0.3, 0.5, 1.0])
     wtp = random.choice([0, 0.5, 1])
     wc = 1.0 - wtp
-    gen(f"rand_{seed}", K, S, lat, bw, bpt, NL, slo1, slo2, tpub, tpbase,
-        distbase, wtp, wc, FULL, reqs)
+    cb = RAND_CALIBRATED[seed]
+    gen(f"rand_{seed}", K, S, lat, bw, bpt, NL, cb["slo1"], cb["slo2"], cb["tpub"],
+        cb["tpbase"], cb["distbase"], wtp, wc, FULL, reqs)
+
+# g2_midmix: 中等规模混合权重 (替换 f3_bigsingle/rand_1, 已校准)
+gen("g2_midmix", 4, 1.0, 2.0, 10.0, 125000, 16,
+    2880.0, 288.0, 1.47900375, 0.278934, 0.306890796, 0.5, 0.5,
+    FULL, bursty(120, (256, 1024), (50, 200), 700.0, 7777))
 
 # tp19: 重吞吐 (wtp=1), bursty 到达; K 已由 16 修为 8 (官方 K<=8)
-def bursty(R, Lin_rng, Lout_rng, span, seed):
-    random.seed(seed)
-    reqs = []
-    t = 0.0
-    for i in range(R):
-        if i > 0 and random.random() < 0.7:
-            t += random.expovariate(1.0 / (span / max(1, R)))
-        reqs.append([round(t, 6), random.randint(*Lin_rng), random.randint(*Lout_rng)])
-    return reqs
-
 gen("tp19", 8, 1.0, 2.0, 10.0, 125000, 32,
     800.0, 400.0, 0.8, 0.1, 1.0, 1.0, 0.0,
     FULL, bursty(1500, (128, 512), (4, 32), 500.0, 7))
