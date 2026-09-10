@@ -162,7 +162,7 @@ def main():
         fixtures += ls_json(PUBLIC)
     if args.subset in ("hidden", "all"):
         fixtures += ls_json(HIDDEN)
-    if args.subset in ("practice", "all"):
+    if args.subset in ("practice",):
         fixtures += ls_json(PRACTICE)
     if args.subset in ("samples", "all") and not ls_json(PUBLIC) and not ls_json(HIDDEN):
         # 公开自测仓库: all 包含 samples (官方样例也可跑通验证)

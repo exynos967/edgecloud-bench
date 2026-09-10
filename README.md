@@ -1,9 +1,8 @@
 # edgecloud-bench
 
-**边缘云协同调度能力评测基准（公开自测版）** — 源自 Codeforces Round 2251 题 A（交互题），用于评测大模型的协议理解与在线调度策略设计能力。
+**边缘云协同调度能力评测基准** — 源自 Codeforces Round 2251 题 A（交互题），用于评测大模型的协议理解与在线调度策略设计能力。
 
-> 本仓库是**自测/开发版**：包含题面、官方样例、模拟器、评测器与公开练习题。
-> 权威评分的计分题集不在本仓库；正式成绩由评测方在私有题集上跑出。
+完整开源、自测自评（SWE-bench 模式）：clone 即可本地跑分，无需任何服务端。
 
 ## 题目
 
@@ -21,7 +20,12 @@ dist = sqrt( max(0,(tdr-SLO1)/SLO1)² + max(0,(tpot-SLO2)/SLO2)² )
 Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 0) )
 ```
 
-正式赛制为两阶段：22 道预赛题给逐题反馈，20 道冻结决赛题的均值即最终成绩。**本仓库只含 2 道官方样例与 10 道公开练习题**，正式计分题不公开。
+赛制（还原官方两阶段）：
+
+- **预赛 22 题**（`fixtures/public/` 1 题 + `fixtures/hidden/` 21 题）：逐题明细反馈
+- **决赛 20 题**（`fixtures/final/`，冻结）：默认提交时自动附跑，只输出总分/均值，即最终成绩
+
+**一次提交一次出分**：`python3 runner.py solution.cpp` 一份报告同时给出预赛明细与决赛聚合分。
 
 ## 测什么能力
 
@@ -33,16 +37,27 @@ Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 
 | 工程性能 | 15s CPU / 256MB 下处理约 10⁶ 事件帧 |
 | 鲁棒性 | FIN 与 TDN 同帧、空帧、END、表插值边界 |
 
-## 用法（自测）
+## 用法
 
 ```bash
-python3 runner.py solution.cpp          # 默认: 2 官方样例 + 10 公开练习题
+python3 runner.py solution.cpp          # 评测: 预赛 22 题明细 + 决赛 20 题聚合分
 python3 runner.py solution.py           # 也支持 Python（官方原题不限语言）
-python3 runner.py solution.cpp --subset samples|practice|stress
-python3 make_handout.py <model_workspace>   # 生成模型侧目录 (只有题面+样例)
+python3 runner.py solution.cpp --subset public|hidden|practice|samples|stress
+python3 runner.py solution.cpp --final  # 只跑冻结决赛（只出聚合分）
+python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+样例)
 ```
 
-练习题生成器：`python3 fixtures/gen_practice.py`（种子固定，可复现）。
+测试集：`public/` 官方预赛 #1 样例 1 题 · `hidden/` 21 题 · `final/` 冻结决赛 20 题 · `practice/` 10 道额外练习题（不计入正式成绩）· `samples/` 官方样例参考 · `stress/` 超规格压力题（opt-in）
+
+所有题集可由 `fixtures/gen_*.py` 重新生成（种子固定，逐字节可复现）。
+
+## 评测纪律
+
+本基准为自测自评。为保证分数可比：
+
+- 被测模型只应接触 `make_handout.py` 生成的目录（题面 + 样例），**不应接触本仓库的题集与评分器**
+- 每个模型正式评测一次，成绩以决赛 MEAN 为准
+- 分享成绩请附上 `results/<name>.json` 与 `<name>_final.json`，任何人可用同一仓库复现审计
 
 ## 给模型的测试提示词
 
@@ -66,5 +81,3 @@ python3 make_handout.py <model_workspace>   # 生成模型侧目录 (只有题�
 - 正式评测只提交一次：评测方将你的 solution 提交给评测器，
   返回预赛 22 题逐题成绩与冻结决赛 20 题的总成绩
 
-完成后将 solution 源码文件放在当前目录即可。
-```
