@@ -2,8 +2,6 @@
 
 **边缘云协同调度能力评测基准** — 用于评测大模型的协议理解与在线调度策略设计能力。
 
-完整开源、自测自评（SWE-bench 模式）：clone 即可本地跑分，无需任何服务端。
-
 ## 题目
 
 系统由 1 台本地计算机 E 和 K 台远端计算机 C0…C(K-1) 组成，持续接收推理请求。每个请求先经 **prefill**（P PRE→P PROC→P POST，一次），再逐 token 执行 **decode**（D PRE→D PROC→D POST，每 token 一轮）。传输自动排队（上行/下行两条 FIFO 共享链路），参赛者每收到一个事件帧就要决定各空闲计算机执行什么任务。题目全文见 [`docs/PROBLEM.md`](docs/PROBLEM.md)
@@ -20,14 +18,14 @@ dist = sqrt( max(0,(tdr-SLO1)/SLO1)² + max(0,(tpot-SLO2)/SLO2)² )
 Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 0) )
 ```
 
-赛制（还原官方两阶段）：
+赛制：
 
 - **预赛 22 题**（`fixtures/public/` 1 题 + `fixtures/hidden/` 21 题）：逐题明细反馈
 - **决赛 20 题**（`fixtures/final/`，冻结）：默认提交时自动附跑，只输出总分/均值，即最终成绩
 
 **一次提交一次出分**：`python3 runner.py solution.cpp` 一份报告同时给出预赛明细与决赛聚合分。
 
-## 测什么能力
+## 考察模型能力的维度
 
 | 维度 | 考察点 |
 |---|---|
