@@ -70,7 +70,7 @@
     <thead>
       <tr>
         <th>#</th><th>模型</th><th>Harness</th><th>决赛平均分</th><th>决赛通过</th>
-        <th>预赛平均分</th><th>日期</th>
+        <th>预赛平均分</th><th>语言</th><th>日期</th>
       </tr>
     </thead>
     <tbody id="board"></tbody>
@@ -96,7 +96,7 @@ fetch('leaderboard.json')
       || (parseInt(b.final_passed) - parseInt(a.final_passed)));
     const tbody = document.getElementById('board');
     if (!entries.length) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty">' +
+      tbody.innerHTML = '<tr><td colspan="8"><div class="empty">' +
         '虚位以待 —— 按上方规则提 PR 即可上榜</div></td></tr>';
       return;
     }
@@ -110,13 +110,14 @@ fetch('leaderboard.json')
         <td class="score">${Number(e.final_mean).toFixed(2)}</td>
         <td class="num ${passedAll ? 'pass-ok' : 'pass-bad'}">${esc(e.final_passed)}</td>
         <td class="num">${Number(e.prelim_mean).toFixed(2)}</td>
+        <td class="num">${esc(e.lang || '—')}</td>
         <td class="num">${esc(e.date || '—')}</td>
       </tr>`;
     }).join('');
   })
   .catch(() => {
     document.getElementById('board').innerHTML =
-      '<tr><td colspan="7"><div class="empty">leaderboard.json 加载失败</div></td></tr>';
+      '<tr><td colspan="8"><div class="empty">leaderboard.json 加载失败</div></td></tr>';
   });
 </script>
 </body>

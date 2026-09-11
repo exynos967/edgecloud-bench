@@ -68,7 +68,7 @@ python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+�
    ```json
    {"model": "模型名+思考强度", "harness": "模型使用的Harness",
     "final_mean": 554.54, "final_passed": "20/20",
-    "prelim_mean": 549.20, "date": "2026-09-11"}
+    "prelim_mean": 549.20, "lang": "使用语言", "date": "2026-09-11"}
    ```
 3. PR 中附 `results/<name>.json` 归档（`成绩摘要` 块即以上各字段），供任何人复跑审计
 
