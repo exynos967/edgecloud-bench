@@ -23,7 +23,7 @@ Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 
 - **预赛 22 题**（`fixtures/public/` 1 题 + `fixtures/hidden/` 21 题）：逐题明细反馈
 - **决赛 20 题**（`fixtures/final/`，冻结）：默认提交时自动附跑，只输出总分/均值，即最终成绩
 
-**一次提交一次出分**：`python3 runner.py solution.cpp` 一份报告同时给出预赛明细与决赛聚合分。
+**一次提交一次出分**：`python3 runner.py <解答文件>` 一份报告同时给出预赛明细与决赛聚合分。
 
 ## 考察模型能力的维度
 
@@ -38,12 +38,14 @@ Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 
 ## 用法
 
 ```bash
-python3 runner.py solution.cpp          # 评测: 预赛 22 题明细 + 决赛 20 题聚合分
-python3 runner.py solution.py           # 也支持 Python
-python3 runner.py solution.cpp --subset public|hidden|practice|samples|stress
-python3 runner.py solution.cpp --final  # 只跑冻结决赛（只出聚合分）
-python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+样例)
+python3 runner.py <解答文件>          # 评测: 预赛 22 题明细 + 决赛 20 题聚合分
+python3 runner.py <解答文件> --binary # 解答为已编译的可执行文件时, 跳过编译
+python3 runner.py <解答文件> --subset public|hidden|practice|samples|stress
+python3 runner.py <解答文件> --final  # 只跑冻结决赛（只出聚合分）
+python3 make_handout.py <dir>         # 生成模型侧目录 (只有题面+样例)
 ```
+
+解答文件语言不限：源文件按扩展名自动识别并编译/解释，也可直接提交编译好的可执行文件（`--binary`）。
 
 测试集：`public/` 官方预赛 #1 样例 1 题 · `hidden/` 21 题 · `final/` 冻结决赛 20 题 · `practice/` 10 道额外练习题（不计入正式成绩）· `samples/` 官方样例参考 · `stress/` 超规格压力题（opt-in）
 

@@ -151,7 +151,7 @@ def run_final(exe, name):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("solution", help="solution 路径 (.cpp/.py/可执行文件)")
+    ap.add_argument("solution", help="solution 路径 (源文件或可执行文件)")
     ap.add_argument("--subset", default="all",
                     choices=["public", "hidden", "practice", "all", "samples", "stress"])
     ap.add_argument("--binary", action="store_true", help="直接跑二进制, 跳过编译")
