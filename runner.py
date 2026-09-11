@@ -40,10 +40,19 @@ def build_command(src, workdir):
         return [exe]
     if ext == ".py":
         return ["python3", src]
+    if ext == ".go":
+        tag = os.path.basename(src).replace(".", "_")
+        exe = os.path.join(workdir, f"solution_{tag}_{os.getpid()}")
+        r = subprocess.run(["go", "build", "-o", exe, src],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print("编译失败:\n" + r.stderr)
+            sys.exit(2)
+        return [exe]
     # 其他: 视为可执行文件
     if os.path.isfile(src) and os.access(src, os.X_OK):
         return [src]
-    print(f"✗ 不支持的 solution 类型: {src} (支持 .cpp/.cc/.cxx/.py 或可执行文件)")
+    print(f"✗ 不支持的 solution 类型: {src} (支持 .cpp/.cc/.cxx/.py/.go 或可执行文件)")
     sys.exit(2)
 
 
@@ -66,6 +75,8 @@ def run_fixture(fixture, cmd):
         if err:
             if "time limit" in err:
                 status = "TLE"
+            elif "memory limit" in err:
+                status = "MLE"
             elif "segmentation" in err:
                 status = "RE"
             else:

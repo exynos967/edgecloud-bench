@@ -349,25 +349,38 @@ class Sim:
                 "util_R": [round(b / elapsed, 3) for b in self.busy_R] if elapsed > 0 else []}
 
 def main():
+    import resource
     cfg = json.load(open(sys.argv[1]))
     trace = "--trace" in sys.argv
     sim = Sim(cfg, trace)
     tle = int(os.environ.get("BENCH_TIME_LIMIT", "15"))     # CF: 15s CPU
-    mem = int(os.environ.get("BENCH_MEM_LIMIT", "256")) * 1024 * 1024  # CF: 256MB
+    mem_mb = int(os.environ.get("BENCH_MEM_LIMIT", "256"))  # CF: 256MB (峰值实际内存口径)
+    # CF 测的是峰值 working set, 不是虚拟地址空间: Go/Java 等运行时启动即保留大量
+    # 虚拟内存 (Go: failed to reserve page summary memory), RLIMIT_AS=256MB 会直接
+    # 杀死它们。虚拟上限只留兜底防失控, 256MB 判定改为事后读子进程峰值 RSS。
+    vas = int(os.environ.get("BENCH_VAS_BACKSTOP", "4096")) * 1024 * 1024
     def limits():
-        import resource
         resource.setrlimit(resource.RLIMIT_CPU, (tle, tle + 1))
-        resource.setrlimit(resource.RLIMIT_AS, (mem, mem))
+        resource.setrlimit(resource.RLIMIT_AS, (vas, vas))
     proc = subprocess.Popen(sys.argv[2:], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                             text=True, bufsize=1, preexec_fn=limits)
     res = sim.run(proc)
     rc = proc.poll()
+    try:
+        if rc is None:
+            proc.kill()
+        proc.wait()          # 先回收, ru_maxrss 才包含该子进程
+    except Exception:
+        pass
     if rc is not None and rc in (-24, -9):      # SIGXCPU / SIGKILL (CPU 超限)
         res = {"error": "time limit exceeded (CPU)", "points": 0.0}
     elif rc == -11:
         res = {"error": "segmentation fault", "points": 0.0}
-    try: proc.kill()
-    except Exception: pass
+    elif "error" not in res:
+        peak_mb = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / 1024
+        if peak_mb > mem_mb:
+            res = {"error": f"memory limit exceeded (peak RSS {peak_mb:.0f}MB > {mem_mb}MB)",
+                   "points": 0.0}
     print(json.dumps(res, indent=2))
 
 if __name__ == "__main__":
