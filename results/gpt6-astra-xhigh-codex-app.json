@@ -1,0 +1,46 @@
+{
+  "solution": "gpt6-astra-xhigh-codex-app",
+  "model": "GPT-6-Astra xhigh",
+  "harness": "Codex app",
+  "time_limit_s": 15,
+  "mem_limit_mb": 256,
+  "成绩摘要": {
+    "预赛平均分": 330.656692,
+    "决赛平均分": 418.599618,
+    "决赛通过": "20/20"
+  },
+  "prelim": {
+    "subset": "all",
+    "total_points": 7274.447219,
+    "mean_points": 330.656692,
+    "per_test": [
+      {"test": "test_ex1", "status": "OK", "runtime_ms": 76, "points": 500.000003},
+      {"test": "e1_nl1", "status": "OK", "runtime_ms": 106, "points": 511.68},
+      {"test": "e2_r1", "status": "OK", "runtime_ms": 79, "points": 107.802069},
+      {"test": "e3_k8burst", "status": "OK", "runtime_ms": 1643, "points": 243.482801},
+      {"test": "e4_sparse", "status": "OK", "runtime_ms": 188, "points": 304.519125},
+      {"test": "e5_sparse_arrival", "status": "OK", "runtime_ms": 64, "points": 500.0},
+      {"test": "f1_lout1", "status": "OK", "runtime_ms": 139, "points": 0.481441},
+      {"test": "f2_burst300", "status": "OK", "runtime_ms": 2748, "points": 58.953401},
+      {"test": "final_mix", "status": "OK", "runtime_ms": 5404, "points": 111.672476},
+      {"test": "g1_loose_slo", "status": "OK", "runtime_ms": 249, "points": 1000.0},
+      {"test": "g2_midmix", "status": "OK", "runtime_ms": 3427, "points": 78.091147},
+      {"test": "perf_max", "status": "TLE", "runtime_ms": 41577, "points": 0.0, "error": "time limit exceeded (CPU)"},
+      {"test": "rand_0", "status": "OK", "runtime_ms": 16194, "points": 3.79164},
+      {"test": "rand_2", "status": "OK", "runtime_ms": 3512, "points": 280.078831},
+      {"test": "rand_3", "status": "OK", "runtime_ms": 1171, "points": 896.343768},
+      {"test": "t1_burst_k4", "status": "OK", "runtime_ms": 1430, "points": 500.0},
+      {"test": "t2_poisson_k8", "status": "OK", "runtime_ms": 1562, "points": 328.593942},
+      {"test": "t3_throughput", "status": "OK", "runtime_ms": 7299, "points": 814.258415},
+      {"test": "t4_latency", "status": "OK", "runtime_ms": 688, "points": 15.894719},
+      {"test": "t5_k1", "status": "OK", "runtime_ms": 159, "points": 500.0},
+      {"test": "t6_bigprefill", "status": "OK", "runtime_ms": 894, "points": 286.358087},
+      {"test": "tp19", "status": "OK", "runtime_ms": 6621, "points": 232.445354}
+    ]
+  },
+  "final": {
+    "total_points": 8371.992361,
+    "mean_points": 418.599618,
+    "passed": "20/20"
+  }
+}
