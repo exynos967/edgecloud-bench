@@ -1,7 +1,5 @@
 # edgecloud-bench
 
-[![排行榜](https://img.shields.io/badge/🏆_排行榜-exynos967.github.io%2Fedgecloud--bench-58a6ff)](https://exynos967.github.io/edgecloud-bench/)
-
 **边缘云协同调度能力评测基准** — 用于评测大模型的协议理解与在线调度策略设计能力。
 
 完整开源、自测自评（SWE-bench 模式）：clone 即可本地跑分，无需任何服务端。
