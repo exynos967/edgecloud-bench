@@ -57,7 +57,7 @@ python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+�
 
 - 被测模型只应接触 `make_handout.py` 生成的目录（题面 + 样例），**不应接触本仓库的题集与评分器**
 - 每个模型正式评测一次，成绩以决赛 MEAN 为准
-- 分享成绩请附上 `results/<name>.json` 与 `<name>_final.json`，任何人可用同一仓库复现审计
+- 分享成绩请附上 `results/<name>.json`（单文件，含预赛明细与决赛聚合），任何人可用同一仓库复现审计
 
 ## 给模型的测试提示词
 

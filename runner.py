@@ -8,7 +8,7 @@ edgecloud-bench 评测器 — 还原 Codeforces 2251 A 的打分流程
   python3 runner.py <solution> --final    # 只跑 20 道冻结决赛题 (聚合分)
 
 规则: 一次提交一次出分。默认跑 22 道预赛题 (逐题明细) + 自动附跑 20 道冻结决赛题 (聚合分)。
-结果归档 results/<solution_name>.json / results/<solution_name>_final.json (重跑覆盖)。
+结果归档 results/<solution_name>.json 单文件 (含预赛明细与决赛聚合, 重跑覆盖)。
 """
 import json, os, subprocess, sys, time, argparse
 
@@ -101,8 +101,8 @@ def eval_fixtures(fixtures, exe):
     return results
 
 
-def run_final(exe, name, workdir):
-    """冻结决赛: 20 题, 只输出聚合分 (防过拟合), 明细归档供运营方审计"""
+def run_final(exe, name):
+    """冻结决赛: 20 题, 只输出聚合分 (防过拟合), 明细随单文件归档供审计"""
     if not os.path.isdir(FINAL):
         print("✗ 本仓库不含冻结决赛题 (仅官方评分环境提供)")
         sys.exit(2)
@@ -116,16 +116,7 @@ def run_final(exe, name, workdir):
     print(f"  FINAL TOTAL: {total:.6f}")
     print(f"  FINAL MEAN : {mean:.6f}   (官方口径: 20 题 points 算术平均)")
     print("=" * 60)
-    out_path = os.path.join(workdir, f"{name}_final.json")
-    with open(out_path, "w") as f:
-        json.dump({
-            "solution": name, "mode": "final",
-            "time_limit_s": TIME_LIMIT, "mem_limit_mb": MEM_LIMIT_MB,
-            "total_points": total, "mean_points": mean,
-            "per_test": results,
-        }, f, indent=2, ensure_ascii=False)
-    print(f"(决赛明细已归档 {out_path})")
-    return total, mean
+    return {"total_points": total, "mean_points": mean, "per_test": results}
 
 
 def main():
@@ -151,7 +142,17 @@ def main():
         exe = build_command(args.solution, workdir)
 
     if args.final:
-        run_final(exe, name, workdir)
+        archive = {
+            "solution": name,
+            "time_limit_s": TIME_LIMIT,
+            "mem_limit_mb": MEM_LIMIT_MB,
+            "final": run_final(exe, name),
+        }
+        out_path = args.json or os.path.join(workdir, f"{name}.json")
+        if out_path != os.devnull:
+            with open(out_path, "w") as f:
+                json.dump(archive, f, indent=2, ensure_ascii=False)
+            print(f"结果已写入: {out_path}")
         return
 
     def ls_json(d):
@@ -194,23 +195,26 @@ def main():
 
     out = {
         "solution": name,
-        "subset": args.subset,
         "time_limit_s": TIME_LIMIT,
         "mem_limit_mb": MEM_LIMIT_MB,
-        "total_points": total,
-        "mean_points": mean,
-        "per_test": results,
+        "prelim": {
+            "subset": args.subset,
+            "total_points": total,
+            "mean_points": mean,
+            "per_test": results,
+        },
     }
+
+    # 官方评分仓库: 默认全量提交自动附跑冻结决赛, 一份报告给出预赛明细 + 决赛聚合两种分数
+    if args.subset == "all" and os.path.isdir(FINAL):
+        print()
+        out["final"] = run_final(exe, name)
+
     out_path = args.json or os.path.join(workdir, f"{name}.json")
     if out_path != os.devnull:
         with open(out_path, "w") as f:
             json.dump(out, f, indent=2, ensure_ascii=False)
         print(f"结果已写入: {out_path}")
-
-    # 官方评分仓库: 默认全量提交自动附跑冻结决赛, 一份报告给出预赛明细 + 决赛聚合两种分数
-    if args.subset == "all" and os.path.isdir(FINAL):
-        print()
-        run_final(exe, name, workdir)
 
 
 if __name__ == "__main__":
