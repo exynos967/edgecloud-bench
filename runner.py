@@ -101,6 +101,25 @@ def eval_fixtures(fixtures, exe):
     return results
 
 
+def summarize(archive):
+    """归档首部的中文成绩摘要, 登记排行榜时直接抄这一块"""
+    s = {}
+    for key in ("final", "prelim"):
+        if key not in archive:
+            continue
+        stage = archive[key]
+        ok = sum(1 for r in stage["per_test"] if r["status"] == "OK")
+        n = len(stage["per_test"])
+        label = "决赛" if key == "final" else ("预赛" if stage.get("subset") == "all" else f"子集({stage.get('subset')})")
+        if key == "final":
+            s["决赛平均分(排名依据)"] = stage["mean_points"]
+        else:
+            s[f"{label}平均分"] = stage["mean_points"]
+        s[f"{label}总分"] = stage["total_points"]
+        s[f"{label}通过"] = f"{ok}/{n}"
+    return s
+
+
 def run_final(exe, name):
     """冻结决赛: 20 题, 只输出聚合分 (防过拟合), 明细随单文件归档供审计"""
     if not os.path.isdir(FINAL):
@@ -144,10 +163,12 @@ def main():
     if args.final:
         archive = {
             "solution": name,
+            "成绩摘要": None,
             "time_limit_s": TIME_LIMIT,
             "mem_limit_mb": MEM_LIMIT_MB,
             "final": run_final(exe, name),
         }
+        archive["成绩摘要"] = summarize(archive)
         out_path = args.json or os.path.join(workdir, f"{name}.json")
         if out_path != os.devnull:
             with open(out_path, "w") as f:
@@ -195,6 +216,7 @@ def main():
 
     out = {
         "solution": name,
+        "成绩摘要": None,
         "time_limit_s": TIME_LIMIT,
         "mem_limit_mb": MEM_LIMIT_MB,
         "prelim": {
@@ -210,6 +232,7 @@ def main():
         print()
         out["final"] = run_final(exe, name)
 
+    out["成绩摘要"] = summarize(out)
     out_path = args.json or os.path.join(workdir, f"{name}.json")
     if out_path != os.devnull:
         with open(out_path, "w") as f:
