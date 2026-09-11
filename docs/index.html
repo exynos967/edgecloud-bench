@@ -69,8 +69,8 @@
   <table>
     <thead>
       <tr>
-        <th>#</th><th>模型</th><th>决赛平均分</th><th>决赛通过</th>
-        <th>预赛平均分</th><th>评测 commit</th><th>日期</th>
+        <th>#</th><th>模型</th><th>Harness</th><th>决赛平均分</th><th>决赛通过</th>
+        <th>预赛平均分</th><th>日期</th>
       </tr>
     </thead>
     <tbody id="board"></tbody>
@@ -78,7 +78,7 @@
 
   <footer>
     数据更新于 <span id="updated">—</span> ·
-    题集/评分参数以评测时 commit 为准，跨 commit 分数不可直接比较
+    题集/评分参数可能随仓库更新调整，不同版本的成绩不可直接比较
   </footer>
 </div>
 
@@ -103,18 +103,13 @@ fetch('leaderboard.json')
     tbody.innerHTML = entries.map((e, i) => {
       const rk = i + 1;
       const passedAll = e.final_passed && e.final_passed.split('/')[0] === e.final_passed.split('/')[1];
-      const commit = e.commit
-        ? `<a href="https://github.com/exynos967/edgecloud-bench/tree/${esc(e.commit)}"><code>${esc(e.commit.slice(0, 7))}</code></a>`
-        : '—';
-      const name = e.results
-        ? `<a href="${esc(e.results)}">${esc(e.model)}</a>` : esc(e.model);
       return `<tr>
         <td class="rank r${rk}">${rk}</td>
-        <td class="model">${name}${e.note ? `<small>${esc(e.note)}</small>` : ''}</td>
+        <td class="model">${esc(e.model)}</td>
+        <td class="num">${esc(e.harness || '—')}</td>
         <td class="score">${Number(e.final_mean).toFixed(2)}</td>
         <td class="num ${passedAll ? 'pass-ok' : 'pass-bad'}">${esc(e.final_passed)}</td>
         <td class="num">${Number(e.prelim_mean).toFixed(2)}</td>
-        <td class="num">${commit}</td>
         <td class="num">${esc(e.date || '—')}</td>
       </tr>`;
     }).join('');
