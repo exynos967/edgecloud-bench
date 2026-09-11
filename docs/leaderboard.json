@@ -19,6 +19,15 @@
       "prelim_mean": 330.656692,
       "lang": "C++17",
       "date": "2026-09-11"
+    },
+    {
+      "model": "GPT-5.6-Sol xhigh",
+      "harness": "Codex app",
+      "final_mean": 417.769828,
+      "final_passed": "20/20",
+      "prelim_mean": 361.572362,
+      "lang": "Go",
+      "date": "2026-09-11"
     }
   ]
 }
