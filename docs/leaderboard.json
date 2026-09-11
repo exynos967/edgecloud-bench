@@ -1,5 +1,14 @@
 {
   "updated": "2026-09-11",
   "metric": "final_mean",
-  "entries": []
+  "entries": [
+    {
+      "model": "deepseek-v4.1-flash high",
+      "harness": "claudecode",
+      "final_mean": 424.02275,
+      "final_passed": "20/20",
+      "prelim_mean": 340.600538,
+      "date": "2026-09-11"
+    }
+  ]
 }
