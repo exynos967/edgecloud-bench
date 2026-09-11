@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>edgecloud-bench 排行榜</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d;
+    --text: #e6edf3; --dim: #8b949e; --accent: #58a6ff;
+    --gold: #ffd700; --silver: #c0c0c0; --bronze: #cd7f32;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.6; padding: 2rem 1rem;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 2rem; }
+  h1 { font-size: 1.8rem; margin-bottom: .4rem; }
+  h1 .bench { color: var(--accent); }
+  .sub { color: var(--dim); font-size: .95rem; }
+  .sub a { color: var(--accent); text-decoration: none; }
+  .sub a:hover { text-decoration: underline; }
+  .rules {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: .9rem 1.2rem; font-size: .88rem; color: var(--dim); margin-bottom: 1.5rem;
+  }
+  .rules b { color: var(--text); }
+  table { width: 100%; border-collapse: collapse; background: var(--panel);
+          border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  th, td { padding: .7rem .9rem; text-align: left; font-size: .92rem; }
+  th { background: #1c2129; color: var(--dim); font-weight: 600; white-space: nowrap;
+       border-bottom: 1px solid var(--border); }
+  td { border-bottom: 1px solid #21262d; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #1c2129; }
+  .rank { font-weight: 700; width: 3rem; }
+  .r1 { color: var(--gold); } .r2 { color: var(--silver); } .r3 { color: var(--bronze); }
+  .score { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .num { font-variant-numeric: tabular-nums; color: var(--dim); }
+  .pass-ok { color: #3fb950; } .pass-bad { color: #f85149; }
+  .model { font-weight: 600; }
+  .model small { display: block; color: var(--dim); font-weight: 400; font-size: .78rem; }
+  .empty { text-align: center; color: var(--dim); padding: 3rem 1rem; }
+  .empty code { background: #1c2129; padding: .1rem .4rem; border-radius: 4px; }
+  footer { text-align: center; color: var(--dim); font-size: .8rem; margin-top: 2rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🏆 <span class="bench">edgecloud-bench</span> 排行榜</h1>
+    <p class="sub">边缘云协同调度能力评测 ·
+      <a href="https://github.com/exynos967/edgecloud-bench">GitHub 仓库</a> ·
+      排名依据: <b>决赛平均分 (FINAL MEAN)</b>
+    </p>
+  </header>
+
+  <div class="rules">
+    <b>上榜规则</b>：本基准为 SWE-bench 式自测自评。提交成绩 = 向仓库提 PR：
+    ① 修改 <code>docs/leaderboard.json</code> 添加一行；
+    ② PR 中附上 <code>results/&lt;name&gt;.json</code> 归档（含逐题明细，任何人可用同一仓库同一 commit 复跑审计）。
+    评测必须一次正式提交，被测模型不得接触题集与评分器。
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>模型</th><th>决赛平均分</th><th>决赛通过</th>
+        <th>预赛平均分</th><th>评测 commit</th><th>日期</th>
+      </tr>
+    </thead>
+    <tbody id="board"></tbody>
+  </table>
+
+  <footer>
+    数据更新于 <span id="updated">—</span> ·
+    题集/评分参数以评测时 commit 为准，跨 commit 分数不可直接比较
+  </footer>
+</div>
+
+<script>
+const esc = s => String(s).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+fetch('leaderboard.json')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('updated').textContent = data.updated || '—';
+    const entries = (data.entries || []).slice().sort((a, b) =>
+      b.final_mean - a.final_mean
+      || b.prelim_mean - a.prelim_mean
+      || (parseInt(b.final_passed) - parseInt(a.final_passed)));
+    const tbody = document.getElementById('board');
+    if (!entries.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty">' +
+        '虚位以待 —— 按上方规则提 PR 即可上榜</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = entries.map((e, i) => {
+      const rk = i + 1;
+      const passedAll = e.final_passed && e.final_passed.split('/')[0] === e.final_passed.split('/')[1];
+      const commit = e.commit
+        ? `<a href="https://github.com/exynos967/edgecloud-bench/tree/${esc(e.commit)}"><code>${esc(e.commit.slice(0, 7))}</code></a>`
+        : '—';
+      const name = e.results
+        ? `<a href="${esc(e.results)}">${esc(e.model)}</a>` : esc(e.model);
+      return `<tr>
+        <td class="rank r${rk}">${rk}</td>
+        <td class="model">${name}${e.note ? `<small>${esc(e.note)}</small>` : ''}</td>
+        <td class="score">${Number(e.final_mean).toFixed(2)}</td>
+        <td class="num ${passedAll ? 'pass-ok' : 'pass-bad'}">${esc(e.final_passed)}</td>
+        <td class="num">${Number(e.prelim_mean).toFixed(2)}</td>
+        <td class="num">${commit}</td>
+        <td class="num">${esc(e.date || '—')}</td>
+      </tr>`;
+    }).join('');
+  })
+  .catch(() => {
+    document.getElementById('board').innerHTML =
+      '<tr><td colspan="7"><div class="empty">leaderboard.json 加载失败</div></td></tr>';
+  });
+</script>
+</body>
+</html>

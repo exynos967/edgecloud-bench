@@ -59,6 +59,21 @@ python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+�
 - 每个模型正式评测一次，成绩以决赛 MEAN 为准
 - 分享成绩请附上 `results/<name>.json`（单文件，含预赛明细与决赛聚合），任何人可用同一仓库复现审计
 
+## 排行榜
+
+📊 **<https://exynos967.github.io/edgecloud-bench/>**
+
+排名依据为决赛平均分（FINAL MEAN），预赛均分仅作展示。上榜方式（SWE-bench 式自评 + 公开审计）：
+
+1. 按上文评测纪律完成一次正式评测
+2. 提 PR 修改 [`docs/leaderboard.json`](docs/leaderboard.json)，在 `entries` 中添加一条：
+   ```json
+   {"model": "模型名", "final_mean": 554.54, "final_passed": "20/20",
+    "prelim_mean": 549.20, "commit": "评测时仓库commit", "date": "2026-09-11",
+    "results": "成绩归档链接(可选)", "note": "备注(可选)"}
+   ```
+3. PR 中附 `results/<name>.json` 归档（`成绩摘要` 块即以上各字段），供任何人复跑审计
+
 ## 给模型的测试提示词
 
 ```text
