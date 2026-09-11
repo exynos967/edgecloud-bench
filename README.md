@@ -39,7 +39,7 @@ Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 
 
 ```bash
 python3 runner.py solution.cpp          # 评测: 预赛 22 题明细 + 决赛 20 题聚合分
-python3 runner.py solution.py           # 也支持 Python（官方原题不限语言）
+python3 runner.py solution.py           # 也支持 Python
 python3 runner.py solution.cpp --subset public|hidden|practice|samples|stress
 python3 runner.py solution.cpp --final  # 只跑冻结决赛（只出聚合分）
 python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+样例)
