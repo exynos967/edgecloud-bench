@@ -66,7 +66,7 @@ python3 make_handout.py <dir>           # 生成模型侧目录 (只有题面+�
 1. 按上文评测纪律完成一次正式评测
 2. 提 PR 修改 [`docs/leaderboard.json`](docs/leaderboard.json)，在 `entries` 中添加一条：
    ```json
-   {"model": "模型名", "harness": "模型使用的Harness",
+   {"model": "模型名+思考强度", "harness": "模型使用的Harness",
     "final_mean": 554.54, "final_passed": "20/20",
     "prelim_mean": 549.20, "date": "2026-09-11"}
    ```
