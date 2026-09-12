@@ -47,16 +47,6 @@
       "prelim_mean": 361.572362,
       "lang": "Go",
       "date": "2026-09-11"
-    },
-    {
-      "model": "GPT-6-Astra Xhigh",
-      "harness": "Codex APP",
-      "final_mean": 417.047618,
-      "final_passed": "20/20",
-      "prelim_mean": 362.531784,
-      "lang": "Python",
-      "cpu_time": 21.25,
-      "date": "2026-09-12"
     }
   ]
 }
