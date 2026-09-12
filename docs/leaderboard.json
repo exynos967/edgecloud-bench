@@ -3,6 +3,16 @@
   "metric": "final_mean",
   "entries": [
     {
+      "model": "Kimi-K3 Max",
+      "harness": "claudecode",
+      "final_mean": 532.275257,
+      "final_passed": "20/20",
+      "prelim_mean": 465.37908,
+      "lang": "Go",
+      "cpu_time": 8.22,
+      "date": "2026-09-12"
+    },
+    {
       "model": "Kimi-K2.8 Max",
       "harness": "claudecode",
       "final_mean": 447.558493,
