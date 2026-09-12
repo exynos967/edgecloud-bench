@@ -98,6 +98,7 @@ def eval_fixtures(fixtures, exe):
             "test": test_name,
             "status": status,
             "runtime_ms": wall_ms,
+            "cpu_ms": d.get("cpu_ms"),
             "points": d.get("points", 0.0),
             "tp": d.get("tp"),
             "mean_tdr": d.get("mean_tdr"),
@@ -128,6 +129,7 @@ def summarize(archive):
             s[f"{label}平均分"] = stage["mean_points"]
         s[f"{label}总分"] = stage["total_points"]
         s[f"{label}通过"] = f"{ok}/{n}"
+        s[f"{label}CPU时间(秒)"] = stage["cpu_s"]
     return s
 
 
@@ -146,7 +148,8 @@ def run_final(exe, name):
     print(f"  FINAL TOTAL: {total:.6f}")
     print(f"  FINAL MEAN : {mean:.6f}   (官方口径: 20 题 points 算术平均)")
     print("=" * 60)
-    return {"total_points": total, "mean_points": mean, "per_test": results}
+    return {"total_points": total, "mean_points": mean, "per_test": results,
+            "cpu_s": round(sum(r.get("cpu_ms") or 0 for r in results) / 1000, 2)}
 
 
 def main():
@@ -235,6 +238,7 @@ def main():
             "total_points": total,
             "mean_points": mean,
             "per_test": results,
+            "cpu_s": round(sum(r.get("cpu_ms") or 0 for r in results) / 1000, 2),
         },
     }
 

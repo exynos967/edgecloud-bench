@@ -376,11 +376,13 @@ def main():
         res = {"error": "time limit exceeded (CPU)", "points": 0.0}
     elif rc == -11:
         res = {"error": "segmentation fault", "points": 0.0}
-    elif "error" not in res:
-        peak_mb = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / 1024
+    ru = resource.getrusage(resource.RUSAGE_CHILDREN)
+    res["cpu_ms"] = round((ru.ru_utime + ru.ru_stime) * 1000, 1)  # 解法进程 CPU 时间
+    if "error" not in res:
+        peak_mb = ru.ru_maxrss / 1024
         if peak_mb > mem_mb:
             res = {"error": f"memory limit exceeded (peak RSS {peak_mb:.0f}MB > {mem_mb}MB)",
-                   "points": 0.0}
+                   "points": 0.0, "cpu_ms": res["cpu_ms"]}
     print(json.dumps(res, indent=2))
 
 if __name__ == "__main__":
