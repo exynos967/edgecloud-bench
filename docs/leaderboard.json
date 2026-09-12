@@ -1,7 +1,16 @@
 {
-  "updated": "2026-09-11",
+  "updated": "2026-09-12",
   "metric": "final_mean",
   "entries": [
+    {
+      "model": "Kimi-K2.8 Max",
+      "harness": "claudecode",
+      "final_mean": 447.558493,
+      "final_passed": "20/20",
+      "prelim_mean": 393.447058,
+      "lang": "Go",
+      "date": "2026-09-12"
+    },
     {
       "model": "deepseek-v4.1-flash high",
       "harness": "claudecode",
