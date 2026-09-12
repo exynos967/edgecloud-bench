@@ -31,7 +31,7 @@
       "date": "2026-09-11"
     },
     {
-      "model": "GPT-6-Astra Xhigh",
+      "model": "GPT-6-Astra Xhigh(降智)",
       "harness": "Codex APP",
       "final_mean": 418.599618,
       "final_passed": "20/20",
@@ -40,7 +40,7 @@
       "date": "2026-09-11"
     },
     {
-      "model": "GPT-5.6-Sol Xhigh",
+      "model": "GPT-5.6-Sol Xhigh(降智)",
       "harness": "Codex APP",
       "final_mean": 417.769828,
       "final_passed": "20/20",
