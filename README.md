@@ -41,7 +41,7 @@ Score = 1000 × ( w_tp·clamp(tp; tp_base, tp_UB) + w_c·clamp(dist; dist_base, 
 python3 runner.py <解答文件>          # 评测: 预赛 22 题明细 + 决赛 20 题聚合分
 python3 runner.py <解答文件> --binary # 解答为已编译的可执行文件时, 跳过编译
 python3 runner.py <解答文件> --subset public|hidden|practice|samples|stress
-python3 runner.py <解答文件> --final  # 只跑冻结决赛（只出聚合分）
+python3 runner.py <解答文件> --final  # 只跑冻结决赛（调试用；正式评测默认已含决赛，无需单独跑）
 python3 make_handout.py <dir>         # 生成模型侧目录 (只有题面+样例)
 ```
 
