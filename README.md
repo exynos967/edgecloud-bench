@@ -1,4 +1,4 @@
-# edgecloud-bench
+# EdgeCloud-Bench
 
 **边缘云协同调度能力评测基准** — 用于评测大模型的协议理解与在线调度策略设计能力。
 
