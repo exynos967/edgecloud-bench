@@ -3,8 +3,8 @@
   "metric": "final_mean",
   "entries": [
     {
-      "model": "Kimi-K3 Max",
-      "harness": "claudecode",
+      "model": "Kimi-K3 High",
+      "harness": "Claude Code",
       "final_mean": 532.275257,
       "final_passed": "20/20",
       "prelim_mean": 465.37908,
@@ -14,7 +14,7 @@
     },
     {
       "model": "Kimi-K2.8 Max",
-      "harness": "claudecode",
+      "harness": "Claude Code",
       "final_mean": 447.558493,
       "final_passed": "20/20",
       "prelim_mean": 393.447058,
@@ -22,8 +22,8 @@
       "date": "2026-09-12"
     },
     {
-      "model": "deepseek-v4.1-flash high",
-      "harness": "claudecode",
+      "model": "Deepseek V4.1 Flash High",
+      "harness": "Claude Code",
       "final_mean": 424.02275,
       "final_passed": "20/20",
       "prelim_mean": 340.600538,
@@ -31,8 +31,8 @@
       "date": "2026-09-11"
     },
     {
-      "model": "GPT-6-Astra xhigh",
-      "harness": "Codex app",
+      "model": "GPT-6-Astra Xhigh",
+      "harness": "Codex APP",
       "final_mean": 418.599618,
       "final_passed": "20/20",
       "prelim_mean": 330.656692,
@@ -40,8 +40,8 @@
       "date": "2026-09-11"
     },
     {
-      "model": "GPT-5.6-Sol xhigh",
-      "harness": "Codex app",
+      "model": "GPT-5.6-Sol Xhigh",
+      "harness": "Codex APP",
       "final_mean": 417.769828,
       "final_passed": "20/20",
       "prelim_mean": 361.572362,
